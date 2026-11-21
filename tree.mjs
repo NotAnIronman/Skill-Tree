@@ -58,8 +58,5 @@ export function curvePath(a,b,bend=28){
   return `M ${a.x} ${a.y} C ${a.x+dx/3+px} ${a.y+dy/3+py}, ${a.x+dx*2/3+px} ${a.y+dy*2/3+py}, ${b.x} ${b.y}`;
 }
 export function spinePath(view,until=57){
-  const bottom=view.height-140;
-  const anchors=[bottom,...Object.values(view.levels),...view.groups.filter(g=>g.role==='spine').map(g=>g.y),...view.groups.map(g=>g.originY).filter(Number.isFinite),until];
-  const ys=[...new Set(anchors)].filter(y=>y>=until&&y<=bottom).sort((a,b)=>b-a);
-  return ys.slice(1).map((y,i)=>curvePath({x:view.center,y:ys[i]},{x:view.center,y},i%2?16:-16)).join(' ');
+  return `M ${view.center} ${view.height-140} V ${until}`;
 }

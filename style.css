@@ -155,3 +155,38 @@ dialog::backdrop{background:#090e19c9;backdrop-filter:blur(3px)}
 .manual-import{margin:16px 0;border-top:1px solid #665879;padding-top:12px;font:14px system-ui}.manual-import summary{color:#d6c2ea;margin-bottom:12px}.manual-import input[type=file]{display:block;width:100%;font:13px system-ui;margin:8px 0 16px}.manual-import textarea{display:block;width:100%;resize:vertical;background:#111b27;color:#e8e8dc;border:1px solid #716187;padding:10px;font:13px monospace;margin:7px 0 10px}.manual-import button{font:13px system-ui}
 @media(max-width:1100px){.sidebar{grid-template-columns:minmax(220px,1.5fr) minmax(100px,.6fr) minmax(140px,.9fr) 155px;gap:10px;padding:8px 12px}.navigation{grid-template-columns:95px minmax(0,1fr)}.controls-end{grid-template-columns:1fr 1fr;gap:4px}.control-menu>summary{font-size:11px}#import-character{white-space:normal;line-height:1.2;min-height:34px}.display-controls .check{font-size:10px}}
 @media(max-width:760px){.sidebar{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 12px;padding:8px 12px}.navigation{grid-column:1/-1;grid-template-columns:104px minmax(0,1fr)}.controls-end{grid-column:1/-1;grid-template-columns:100px minmax(0,1fr);gap:10px}.controls-end .field>label,.controls-end .control-menu{display:none}.tree-heading{padding:6px 10px}.tree-heading .search input{font-size:13px}.tree-toolbar{padding-left:8px;padding-right:8px}.sidebar label{font-size:11px}.display-controls .check{font-size:10px}.level-inputs input[type=number]{font-size:18px}.sidebar select{font-size:13px}#import-character{min-height:32px}}
+.tree-node{height:auto;min-height:110px;transform:translate(-50%,-24px)}
+.tree-node[data-role=spine]{transform:translate(-50%,-29px)}
+.node-title{max-height:52px;line-height:1.22;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tree-node[data-kind=boss]{transform:translate(-50%,-28px)}
+.tree-node[data-kind=boss] .node-medal{width:56px;height:56px}
+.tree-node[data-kind=boss] .wiki-icon{width:38px;height:38px}
+[data-tier=Easy]{--tier-color:#88be93}[data-tier=Medium]{--tier-color:#8db8df}[data-tier=Hard]{--tier-color:#d9b675}[data-tier=Elite]{--tier-color:#ba96dc}[data-tier=Master]{--tier-color:#df8c8b}[data-tier=Grandmaster]{--tier-color:#e9d3a2}
+.tree-node[data-kind=boss]{--orb-color:var(--tier-color)}
+.tree-node[data-kind=boss] .node-level{color:var(--tier-color)}
+.kill-mark{position:absolute;right:-5px;bottom:-2px;z-index:3;display:grid;place-items:center;width:21px;height:21px;border-radius:50%;font:bold 12px system-ui;background:#254d3c;border:1px solid #a3d2a1;color:#d2f3ce}
+.tier-gate{position:absolute;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:7px;color:var(--tier-color);pointer-events:none;white-space:nowrap}
+.tier-gate b{font:18px Georgia;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;border:1px solid var(--tier-color);background:radial-gradient(#333540,#131a25);box-shadow:0 0 0 4px #121924,0 0 30px color-mix(in srgb,var(--tier-color) 14%,transparent)}
+.tier-gate>span{font:10px system-ui;letter-spacing:1.5px;text-transform:uppercase;background:#111722;padding:2px 5px}
+#paths .branch.boss{stroke:#728096;stroke-width:1.7;opacity:.8}#paths .branch.boss.defeated{stroke:#b5d7a1;opacity:1;filter:drop-shadow(0 0 4px #7fae7766)}
+body[data-page=Bossing] .sidebar{grid-template-columns:minmax(280px,1fr) minmax(150px,.45fr) 330px}
+body[data-page=Bossing] .top-terminal span{border-color:#d7b1d0;background:radial-gradient(#4b3a54,#181b2a);box-shadow:0 0 55px #bb82bf22}
+.boss-heading .detail-icon{border-color:var(--tier-color)}
+.boss-heading h2{color:var(--tier-color)}
+.boss-check{display:flex;align-items:flex-start;gap:9px;font:14px/1.5 system-ui;color:#d4d3c8;margin:0;cursor:pointer}
+.boss-check input{width:16px;height:16px;flex:none;margin:3px 0 0;accent-color:#9dc7a9;cursor:pointer}
+.boss-heading>.boss-check{padding:13px 12px;border:1px solid #526158;background:#18272288;border-radius:4px}
+.boss-section,.combat-achievements{padding:20px 0;border-bottom:1px solid #4b4c55}
+.boss-section h3,.combat-achievements h3{font:16px Georgia;color:#e0d3ad;margin:0 0 13px}
+.mechanic-chips,.boss-rewards{display:flex;flex-wrap:wrap;gap:7px}
+.mechanic-chips>span{font:12px/1.5 system-ui;color:#bfc7d4;padding:4px 7px;background:#101b2788;border:1px solid #465362;border-radius:3px}
+.boss-rewards .source-link{font:12px/1.5 system-ui;margin:0;border-bottom:1px dotted #786d54;text-decoration:none}
+.boss-access{padding:16px 0;border-bottom:1px solid #4b4c55;font:13px/1.7 system-ui;color:#bdc4cb}
+.boss-access>summary{color:#c6bba0}.boss-access[open]>summary{margin-bottom:12px}.boss-access .unlock-note{font-size:13px;margin:0}.boss-access .source-link{margin:10px 0 0}
+.ca-progress{font:12px/1.6 system-ui;color:#9ec6ac;margin:0 0 14px}
+.ca-controls{display:grid;gap:12px;margin:12px 0 18px}.ca-controls select{font:12px system-ui}.ca-controls .boss-check{font-size:12px;color:#b9c0c5}
+.ca-task{padding:15px 0;border-top:1px solid #454d5b}.ca-task .boss-check{font-size:13px;line-height:1.6}.ca-task .boss-check:has(input:checked)>span{color:#94bc99}
+.ca-meta{font:11px/1.6 system-ui;color:var(--tier-color);margin:7px 0 6px 25px}.ca-description{font:12px/1.75 system-ui;color:#b6bec8;margin:0 0 0 25px}.ca-task .source-link{font:11px/1.6 system-ui;margin:7px 0 0 25px;color:#b7a7d1}
+.ca-note{font:12px/1.8 system-ui;color:#b9bdc4}.boss-sources .scope-note{margin-top:18px}.boss-sources .source-link{margin:12px 0 0}
+@media(max-width:1100px){body[data-page=Bossing] .sidebar{grid-template-columns:minmax(240px,1fr) minmax(145px,.5fr) 155px}}
+@media(max-width:760px){body[data-page=Bossing] .sidebar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}body[data-page=Bossing] .display-controls{grid-column:1/-1}body[data-page=Bossing] .display-controls select{width:calc(100% - 135px)}body[data-page=Bossing] .display-controls .check{top:auto;bottom:7px}.ca-description{font-size:13px}}

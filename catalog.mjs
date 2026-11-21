@@ -1,8 +1,9 @@
 import {wikiData} from './wiki-data.mjs';
 import {coreUnlockIds} from './progression.mjs';
+import {bossingData} from './boss-data.mjs';
 export const skillNames=Object.keys(wikiData.skills);
 export const skills=Object.fromEntries(skillNames.map(name=>[name,{icon:name.slice(0,2).toUpperCase()}]));
-export const kinds={resource:{label:'Gather & make',symbol:'◈',offset:0},tool:{label:'Equipment',symbol:'⚒',offset:1},activity:{label:'Activities & access',symbol:'⌘',offset:-1},quest:{label:'Quest gates',symbol:'✧',offset:-2},diary:{label:'Diary gates',symbol:'❖',offset:2},milestone:{label:'Milestones',symbol:'✦',offset:0},advice:{label:'Suggested upgrades',symbol:'◇',offset:3}};
+export const kinds={resource:{label:'Gather & make',symbol:'◈',offset:0},tool:{label:'Equipment',symbol:'⚒',offset:1},activity:{label:'Activities & access',symbol:'⌘',offset:-1},quest:{label:'Quest gates',symbol:'✧',offset:-2},diary:{label:'Diary gates',symbol:'❖',offset:2},milestone:{label:'Milestones',symbol:'✦',offset:0},advice:{label:'Suggested upgrades',symbol:'◇',offset:3},boss:{label:'Boss encounter',symbol:'⚔',offset:0}};
 const level=(skill,min)=>({kind:'level',skill,min});
 function classify(text,links){
   if(/^Required .*diary/i.test(text))return 'diary';
@@ -36,19 +37,19 @@ const coreIds=coreUnlockIds(catalog);
 const allImages=catalog.flatMap(node=>node.images||[]);
 for(const node of catalog){node.mainline=coreIds.has(node.id);node.icon=node.images?.find(image=>image.url.startsWith('https://oldschool.runescape.wiki/images/'))||null;if(node.note==='Skill mastery')node.icon=catalog.filter(other=>other.skill===node.skill&&other.min===99).flatMap(other=>other.images||[]).find(image=>/cape/i.test(image.title))||node.icon;if(node.id==='infernal-craft')node.icon=allImages.find(image=>image.title==='Infernal axe')||node.icon;}
 export const attribution={...wikiData.license,retrieved:wikiData.retrieved,entries:wikiData.entries.length};
-export const bosses=['Wintertodt','Tempoross','Zalcano','Guardians of the Rift','Obor','Bryophyta','Scurrius','The Gauntlet','Hespori','Royal Titans','Yama'];
+export const bosses=bossingData.bosses.map(b=>b.title);
 function questTarget(n){if(n.kind!=='quest')return null;return n.links.find(l=>!ignoredLink(l.title))?.title||null;}
 function diaryTarget(n){const title=n.links.find(l=>/Diary$/.test(l.title)&&l.title!=='Achievement Diary')?.title;return title?title.replace(/\b(Easy|Medium|Hard|Elite)\s*/g,'').trim().replace(/^Kourend Diary$/,'Kourend & Kebos Diary'):null;}
 export function optionsFor(page){
   if(page==='Skilling')return skillNames;
-  if(page==='Bossing')return bosses.filter(b=>catalog.some(n=>n.links.some(l=>l.title===b)));
+  if(page==='Bossing')return ['Full boss ladder',...bossingData.tiers.map(t=>t+' tier'),...bosses];
   if(page==='Questing')return [...new Set(catalog.map(questTarget).filter(Boolean))].sort();
   return [...new Set(catalog.filter(n=>n.kind==='diary').map(diaryTarget).filter(Boolean))].sort();
 }
 export function nodesFor(page,selection,mode='main'){
+  if(page==='Bossing')return bossingData.bosses.filter(b=>selection==='Full boss ladder'||selection===b.tier+' tier'||selection===b.title);
   const visible=catalog.filter(n=>!n.accountMode||n.accountMode===mode);
   if(page==='Skilling')return visible.filter(n=>n.skill===selection);
-  if(page==='Bossing')return visible.filter(n=>n.links.some(l=>l.title===selection));
   if(page==='Questing')return visible.filter(n=>questTarget(n)===selection);
   return visible.filter(n=>n.kind==='diary'&&diaryTarget(n)===selection);
 }

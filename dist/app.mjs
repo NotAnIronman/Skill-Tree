@@ -178,6 +178,7 @@ function showCharacterPreview(raw){
 }
 function previewJson(text){importController?.abort();importController=null;$('character-load').disabled=false;importPreview=null;$('character-apply').disabled=true;$('character-preview').replaceChildren();try{if(text.length>256000)throw Error('Hiscores JSON is too large.');showCharacterPreview(JSON.parse(text));}catch(error){$('character-status').textContent=error instanceof SyntaxError?'This is not valid Hiscores JSON. Paste the complete response from the official page.':error.message;}}
 $('character-json-preview').onclick=()=>previewJson($('character-json').value);
-$('character-json-file').onchange=async()=>{const file=$('character-json-file').files[0];if(!file)return;if(file.size>256000){$('character-status').textContent='Hiscores JSON is too large.';return;}previewJson(await file.text());};
+$('character-json-file').onchange=async()=>{const file=$('character-json-file').files[0];if(!file)return;importPreview=null;$('character-apply').disabled=true;$('character-preview').replaceChildren();if(file.size>256000){$('character-status').textContent='Hiscores JSON is too large.';return;}try{previewJson(await file.text());}catch{$('character-status').textContent='The selected file could not be read. Your progress has been kept.';}};
 $('character-apply').onclick=()=>{if(!importPreview)return;save.profiles[importMode]=mergeCharacter(save.profiles[importMode],importPreview);persist();closeCharacter();render();jump(profile().levels[levelSkill]);$('message').textContent=`Imported ${importPreview.name}'s skill levels into the ${importMode} profile.`;};
 updateNavigation();
+

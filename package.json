@@ -1,0 +1,1 @@
+{"name":"gielinor-pathways","private":true,"type":"module","scripts":{"test":"node --test --test-isolation=none test/*.test.mjs","build":"node scripts/build-pages.mjs","build:worker":"node scripts/build-worker.mjs","start":"node --use-env-proxy --use-system-ca server.mjs","qa:layout":"node scripts/layout-browser-qa.mjs"}}

@@ -1,0 +1,6 @@
+{
+  "name": "gielinor-hiscores",
+  "main": "worker/public-hiscores.mjs",
+  "compatibility_date": "2026-11-21",
+  "workers_dev": true
+}

@@ -1,0 +1,9 @@
+node_modules/
+pages/
+dist/server/
+sources/
+outputs/
+.openai/
+.wrangler/
+.env
+.env.*

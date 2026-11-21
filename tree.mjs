@@ -14,7 +14,7 @@ function spread(slots,count,seed=0){
 }
 export function layoutTree(nodes,filter='all',query='',{width=TREE.width,density=1}={}){
   const text=query.toLowerCase().trim();width=Math.max(200,Math.floor(width));
-  const center=width/2,{nodeWidth,sides,slots,shared}=lanes(width),gap=Math.max(144,Math.round(156*density)),levels={},groups=[];
+  const center=width/2,{nodeWidth,sides,slots,shared}=lanes(width),gap=Math.max(180,Math.round(188*density)),levels={},groups=[];
   const visible=nodes.filter(node=>(filter==='all'||node.kind===filter)&&(!text||`${node.title} ${node.note} ${node.skill}`.toLowerCase().includes(text)));
   let cursor=TREE.top;
   for(let level=99;level>=1;level--){
@@ -34,7 +34,7 @@ export function layoutTree(nodes,filter='all',query='',{width=TREE.width,density
 }
 export function layoutLadder(nodes,query='',{width=TREE.width,density=1}={}){
   width=Math.max(200,Math.floor(width));
-  const {nodeWidth,sides,slots}=lanes(width),branchSlots=sides.length?sides:slots,center=width/2,gap=Math.max(144,Math.round(156*density)),levels={},groups=[],checkpoints=[];
+  const {nodeWidth,sides,slots}=lanes(width),branchSlots=sides.length?sides:slots,center=width/2,gap=Math.max(180,Math.round(188*density)),levels={},groups=[],checkpoints=[];
   const text=query.toLowerCase().trim(),visible=nodes.filter(node=>!text||`${node.title} ${node.tier} ${node.mechanics} ${node.rewards.map(r=>r.title).join(' ')}`.toLowerCase().includes(text));
   let cursor=TREE.top;
   for(let stage=6;stage>=1;stage--){
@@ -59,4 +59,15 @@ export function curvePath(a,b,bend=28){
 }
 export function spinePath(view,until=57){
   return `M ${view.center} ${view.height-140} V ${until}`;
+}
+export function branchRoutes(groups){
+  const rows=new Map(),routes=[];
+  for(const group of groups.filter(g=>g.role==='branch')){const key=group.y+':'+(group.x<group.originX?'left':'right');if(!rows.has(key))rows.set(key,[]);rows.get(key).push(group);}
+  for(const row of rows.values()){
+    const center=row[0].originX,y=row[0].y,busY=y-54,outer=row.reduce((a,b)=>Math.abs(a.x-center)>Math.abs(b.x-center)?a:b),dx=outer.x-center;
+    if(!dx){for(const g of row)routes.push({kind:g.kind,id:g.id,path:curvePath({x:center,y:busY},g,12)});continue;}
+    routes.push({kind:'bus',path:`M ${center} ${busY} C ${center+dx/3} ${busY-16}, ${center+2*dx/3} ${busY-16}, ${outer.x} ${busY}`});
+    for(const group of row){const t=(group.x-center)/dx,startY=busY-48*t*(1-t);routes.push({kind:group.kind,id:group.id,path:curvePath({x:group.x,y:startY},group,group.x<center?-10:10)});}
+  }
+  return routes;
 }

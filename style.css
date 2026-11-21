@@ -190,3 +190,23 @@ body[data-page=Bossing] .top-terminal span{border-color:#d7b1d0;background:radia
 .ca-note{font:12px/1.8 system-ui;color:#b9bdc4}.boss-sources .scope-note{margin-top:18px}.boss-sources .source-link{margin:12px 0 0}
 @media(max-width:1100px){body[data-page=Bossing] .sidebar{grid-template-columns:minmax(240px,1fr) minmax(145px,.5fr) 155px}}
 @media(max-width:760px){body[data-page=Bossing] .sidebar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}body[data-page=Bossing] .display-controls{grid-column:1/-1}body[data-page=Bossing] .display-controls select{width:calc(100% - 135px)}body[data-page=Bossing] .display-controls .check{top:auto;bottom:7px}.ca-description{font-size:13px}}
+.controls-end{grid-template-columns:88px 112px 68px;justify-content:end}
+.sidebar{grid-template-columns:minmax(250px,1.6fr) minmax(115px,.7fr) minmax(145px,.9fr) 280px}
+body[data-page=Bossing] .sidebar,body[data-page=Questing] .sidebar{grid-template-columns:minmax(280px,1fr) minmax(150px,.45fr) 280px}
+#view-note:empty{display:none}
+#credits{font:11px system-ui;padding:0;border:0;background:none;color:#b2b8c1;text-decoration:underline;text-underline-offset:3px}
+#credits-dialog{font:14px/1.8 system-ui;color:#bfc5cf}#credits-dialog h2{font-family:Georgia}#credits-dialog a{color:#d8c28d}.credits-key{display:flex;flex-wrap:wrap;gap:8px 18px;border-top:1px solid #4e5362;padding-top:15px;font-size:12px}
+#paths .branch.bus{stroke:#697d86;stroke-width:1.7}
+#paths .quest-connection{stroke:#8c9fb4;stroke-width:1.6;fill:none;opacity:.8}#paths .quest-connection.partial{stroke-dasharray:4 5}
+body[data-page=Questing] #world{background:radial-gradient(ellipse 70% 1800px at 0 25%,#223e4e35,transparent),radial-gradient(ellipse 70% 1600px at 100% 80%,#4e355133,transparent),#111722}
+.tree-node[data-role=quest]{height:72px;min-height:72px;transform:translate(-22px,-22px);text-align:left;display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:12px;align-items:start}
+.tree-node[data-role=quest] .node-medal{grid-row:1/3;width:44px;height:44px;margin:0}.tree-node[data-role=quest] .node-medal svg{width:23px;height:23px}
+.tree-node[data-role=quest] .node-title{font-size:13px;max-height:48px;line-height:1.22;padding:2px 0 0}.tree-node[data-role=quest] .node-level{font-size:10px;margin-top:5px;white-space:normal;line-height:1.25}
+.quest-reference .node-medal{border-style:dashed!important}.quest-context{opacity:.72}.quest-ref-mark{position:absolute;right:-4px;bottom:-4px;z-index:3;display:grid;place-items:center;background:#202c3e;border:1px solid #9aadc4;border-radius:50%;width:17px;height:17px;font:12px system-ui;color:#d2dce8}
+.quest-heading .quest-meta{font:12px/1.7 system-ui;color:#aeb8c7;margin-bottom:18px}.quest-heading label{margin-top:18px}.quest-heading select{margin-top:7px;font:13px system-ui}
+.quest-focus{width:100%;margin:8px 0;font:13px system-ui;border-color:#635c80;background:#302e4355}
+.quest-link{display:block;width:100%;text-align:left;border:0;border-top:1px solid #424b59;background:none;font:13px/1.7 system-ui;padding:10px 0;color:#c4ccd9;overflow-wrap:anywhere}.quest-link:hover{color:#f0dbab}
+.quest-skill,.quest-gate-note,.quest-reference-note{font:12px/1.8 system-ui;color:#b5c0cc;margin:8px 0}.quest-reference-note{color:#b6a4d2}
+.quest-notes{font:12px/1.8 system-ui;padding-top:18px;color:#b3bbcb}.quest-notes .unlock-note{font-size:12px;margin-top:12px}
+@media(max-width:1100px){.sidebar{grid-template-columns:minmax(220px,1.5fr) minmax(100px,.6fr) minmax(140px,.9fr) 155px}.controls-end{grid-template-columns:1fr 1fr}body[data-page=Bossing] .sidebar,body[data-page=Questing] .sidebar{grid-template-columns:minmax(240px,1fr) minmax(145px,.5fr) 155px}}
+@media(max-width:760px){.sidebar,body[data-page=Bossing] .sidebar,body[data-page=Questing] .sidebar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.controls-end{grid-template-columns:80px minmax(0,1fr) 70px;gap:8px}.controls-end .control-menu{display:block}body[data-page=Questing] .display-controls{grid-column:1/-1}body[data-page=Questing] .display-controls select{width:calc(100% - 135px)}body[data-page=Questing] .display-controls .check{top:auto;bottom:7px}.tree-node[data-role=quest] .node-title{font-size:12px}}

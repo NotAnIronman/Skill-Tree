@@ -43,5 +43,5 @@ export function drawBossDetail(container,boss,{profile,onChange,orbIcon}){
     tier.onchange=renderTasks;renderTasks();
   }
   container.append(section);
-  const sources=element('div','boss-sources');sources.append(element('p','scope-note','Tiers follow the Wiki’s learning ladder. Peers are alternatives; their placement is not an access requirement. Solo, team, and harder variants are shown separately.'),link('Bossing Ladder · RealEvanem / OSRS Wiki',bossingData.source),link('Combat achievement source',bossingData.taskSource),element('p','source-revision',`Wiki revisions ${bossingData.revision} / ${bossingData.taskRevision} · ${bossingData.retrieved} · CC BY-NC-SA 3.0`));container.append(sources);
+  const sources=element('div','boss-sources');sources.append(link('Bossing ladder ↗',bossingData.source),link('Wiki encounter guide ↗',boss.source));container.append(sources);
 }

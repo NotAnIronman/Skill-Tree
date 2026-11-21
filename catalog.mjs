@@ -1,6 +1,7 @@
 import {wikiData} from './wiki-data.mjs';
 import {coreUnlockIds} from './progression.mjs';
 import {bossingData} from './boss-data.mjs';
+import {questOptions,questsFor} from './questing.mjs';
 export const skillNames=Object.keys(wikiData.skills);
 export const skills=Object.fromEntries(skillNames.map(name=>[name,{icon:name.slice(0,2).toUpperCase()}]));
 export const kinds={resource:{label:'Gather & make',symbol:'◈',offset:0},tool:{label:'Equipment',symbol:'⚒',offset:1},activity:{label:'Activities & access',symbol:'⌘',offset:-1},quest:{label:'Quest gates',symbol:'✧',offset:-2},diary:{label:'Diary gates',symbol:'❖',offset:2},milestone:{label:'Milestones',symbol:'✦',offset:0},advice:{label:'Suggested upgrades',symbol:'◇',offset:3},boss:{label:'Boss encounter',symbol:'⚔',offset:0}};
@@ -43,13 +44,13 @@ function diaryTarget(n){const title=n.links.find(l=>/Diary$/.test(l.title)&&l.ti
 export function optionsFor(page){
   if(page==='Skilling')return skillNames;
   if(page==='Bossing')return ['Full boss ladder',...bossingData.tiers.map(t=>t+' tier'),...bosses];
-  if(page==='Questing')return [...new Set(catalog.map(questTarget).filter(Boolean))].sort();
+  if(page==='Questing')return questOptions();
   return [...new Set(catalog.filter(n=>n.kind==='diary').map(diaryTarget).filter(Boolean))].sort();
 }
 export function nodesFor(page,selection,mode='main'){
   if(page==='Bossing')return bossingData.bosses.filter(b=>selection==='Full boss ladder'||selection===b.tier+' tier'||selection===b.title);
+  if(page==='Questing')return questsFor(selection);
   const visible=catalog.filter(n=>!n.accountMode||n.accountMode===mode);
   if(page==='Skilling')return visible.filter(n=>n.skill===selection);
-  if(page==='Questing')return visible.filter(n=>questTarget(n)===selection);
   return visible.filter(n=>n.kind==='diary'&&diaryTarget(n)===selection);
 }

@@ -1,4 +1,4 @@
-import {bossingData} from './boss-data.mjs?v=d7f0fc989b8a';
+import {bossingData} from './boss-data.mjs?v=7ca382852025';
 export {bossingData};
 export const bossIds=new Set(bossingData.bosses.map(b=>b.id));
 export const combatTaskIds=new Set(bossingData.tasks.map(t=>String(t.id)));
@@ -9,13 +9,14 @@ function element(tag,className,text){const node=document.createElement(tag);if(c
 function link(label,url){const a=element('a','source-link',label);a.href=url;a.target='_blank';a.rel='noreferrer';return a;}
 function checkbox(label,checked,change){const row=element('label','boss-check');const input=document.createElement('input');input.type='checkbox';input.checked=checked;input.onchange=()=>change(input.checked);row.append(input,element('span','',label));return row;}
 
-export function drawBossDetail(container,boss,{profile,onChange,orbIcon}){
+export function drawBossDetail(container,boss,{profile,onChange,orbIcon,gearSetups=[],onGear}){
   const heading=element('div','boss-heading');heading.dataset.tier=boss.tier;
   heading.append(element('p','detail-kicker',`${boss.tier.toUpperCase()} · BOSS LADDER`));
   const icon=element('div','detail-icon');icon.innerHTML=orbIcon(boss,'boss');heading.append(icon,element('h2','',boss.title));
   const completionLabel=boss.title==='Grandmaster Combat Achievements'?'Goal complete':boss.title==='Barbarian Assault'?'Run complete':'First kill complete';
   heading.append(checkbox(completionLabel,!!profile.bossKills[boss.id],checked=>{if(checked)profile.bossKills[boss.id]=true;else delete profile.bossKills[boss.id];onChange();}));
   container.append(heading);
+  if(gearSetups.length){const section=element('section','boss-section gear-boss-actions'),label=element('label','','Equipment setup'),select=element('select');select.setAttribute('aria-label','Boss equipment setup');for(const setup of gearSetups){const option=element('option','',setup.method);option.value=setup.id;select.append(option);}label.append(select);const button=element('button','quest-focus','View gear path →');button.onclick=()=>onGear(select.value);section.append(label,button);container.append(section);}
   const mechanics=element('section','boss-section');mechanics.append(element('h3','','What you practise'));
   const chips=element('div','mechanic-chips');for(const text of boss.mechanics.split(/,\s*/))chips.append(element('span','',text));mechanics.append(chips);container.append(mechanics);
   const rewards=element('section','boss-section');rewards.append(element('h3','','Notable rewards'));

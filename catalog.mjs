@@ -1,7 +1,8 @@
-import {wikiData} from './wiki-data.mjs?v=d7f0fc989b8a';
-import {coreUnlockIds} from './progression.mjs?v=d7f0fc989b8a';
-import {bossingData} from './boss-data.mjs?v=d7f0fc989b8a';
-import {questOptions,questsFor} from './questing.mjs?v=d7f0fc989b8a';
+import {wikiData} from './wiki-data.mjs?v=7ca382852025';
+import {coreUnlockIds} from './progression.mjs?v=7ca382852025';
+import {bossingData} from './boss-data.mjs?v=7ca382852025';
+import {questOptions,questsFor} from './questing.mjs?v=7ca382852025';
+import {gearStyles,gearNodes} from './gear.mjs?v=7ca382852025';
 export const skillNames=Object.keys(wikiData.skills);
 export const skills=Object.fromEntries(skillNames.map(name=>[name,{icon:name.slice(0,2).toUpperCase()}]));
 export const kinds={resource:{label:'Gather & make',symbol:'◈',offset:0},tool:{label:'Equipment',symbol:'⚒',offset:1},activity:{label:'Activities & access',symbol:'⌘',offset:-1},quest:{label:'Quest gates',symbol:'✧',offset:-2},diary:{label:'Diary gates',symbol:'❖',offset:2},milestone:{label:'Milestones',symbol:'✦',offset:0},advice:{label:'Suggested upgrades',symbol:'◇',offset:3},boss:{label:'Boss encounter',symbol:'⚔',offset:0}};
@@ -42,12 +43,14 @@ export const bosses=bossingData.bosses.map(b=>b.title);
 function questTarget(n){if(n.kind!=='quest')return null;return n.links.find(l=>!ignoredLink(l.title))?.title||null;}
 function diaryTarget(n){const title=n.links.find(l=>/Diary$/.test(l.title)&&l.title!=='Achievement Diary')?.title;return title?title.replace(/\b(Easy|Medium|Hard|Elite)\s*/g,'').trim().replace(/^Kourend Diary$/,'Kourend & Kebos Diary'):null;}
 export function optionsFor(page){
+  if(page==='Gear')return gearStyles;
   if(page==='Skilling')return skillNames;
   if(page==='Bossing')return ['Full boss ladder',...bossingData.tiers.map(t=>t+' tier'),...bosses];
   if(page==='Questing')return questOptions();
   return [...new Set(catalog.filter(n=>n.kind==='diary').map(diaryTarget).filter(Boolean))].sort();
 }
 export function nodesFor(page,selection,mode='main'){
+  if(page==='Gear')return gearNodes(selection,mode);
   if(page==='Bossing')return bossingData.bosses.filter(b=>selection==='Full boss ladder'||selection===b.tier+' tier'||selection===b.title);
   if(page==='Questing')return questsFor(selection);
   const visible=catalog.filter(n=>!n.accountMode||n.accountMode===mode);

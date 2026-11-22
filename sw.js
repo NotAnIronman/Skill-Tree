@@ -1,4 +1,4 @@
-const VERSION="ff47ebe08a3e1eb3",ASSETS=["app.mjs","boss-data.mjs","boss-icons.mjs","bossing.mjs","catalog.mjs","character.mjs","config.mjs","engine.mjs","icon-data.mjs","index.html","progression.mjs","quest-data.mjs","questing.mjs","style.css","tree.mjs","wiki-data.mjs"];
+const VERSION="7e5d08a6e18fc3e4",ASSETS=["app.mjs","boss-data.mjs","boss-icons.mjs","bossing.mjs","catalog.mjs","character.mjs","config.mjs","engine.mjs","icon-data.mjs","index.html","progression.mjs","quest-data.mjs","quest-route-data.mjs","questing.mjs","style.css","tree.mjs","wiki-data.mjs"];
 const scope=new URL(self.registration.scope),prefix='nst:'+scope.pathname+':',staticCache=prefix+VERSION,imageCache=prefix+'images';
 const pendingImages=new Map(),imageAge=7*86400000;
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(staticCache);await Promise.all(ASSETS.map(async file=>{const url=new URL(file,scope);const response=await fetch(new Request(url,{cache:'reload'}));if(!response.ok)throw Error('NST cache: '+response.status);await cache.put(url,response);}));await self.skipWaiting();})()));

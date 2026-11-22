@@ -1,4 +1,4 @@
-import {bossingData} from './boss-data.mjs';
+import {bossingData} from './boss-data.mjs?v=e0d1e3817a55';
 export {bossingData};
 export const bossIds=new Set(bossingData.bosses.map(b=>b.id));
 export const combatTaskIds=new Set(bossingData.tasks.map(t=>String(t.id)));

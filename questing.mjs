@@ -1,4 +1,4 @@
-import {questData} from './quest-data.mjs';
+import {questData} from './quest-data.mjs?v=e0d1e3817a55';
 export {questData};
 export const questMap=new Map(questData.quests.map(q=>[q.id,q]));
 export const questIds=new Set(questMap.keys());

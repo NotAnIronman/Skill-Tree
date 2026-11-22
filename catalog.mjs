@@ -1,7 +1,7 @@
-import {wikiData} from './wiki-data.mjs';
-import {coreUnlockIds} from './progression.mjs';
-import {bossingData} from './boss-data.mjs';
-import {questOptions,questsFor} from './questing.mjs';
+import {wikiData} from './wiki-data.mjs?v=e0d1e3817a55';
+import {coreUnlockIds} from './progression.mjs?v=e0d1e3817a55';
+import {bossingData} from './boss-data.mjs?v=e0d1e3817a55';
+import {questOptions,questsFor} from './questing.mjs?v=e0d1e3817a55';
 export const skillNames=Object.keys(wikiData.skills);
 export const skills=Object.fromEntries(skillNames.map(name=>[name,{icon:name.slice(0,2).toUpperCase()}]));
 export const kinds={resource:{label:'Gather & make',symbol:'◈',offset:0},tool:{label:'Equipment',symbol:'⚒',offset:1},activity:{label:'Activities & access',symbol:'⌘',offset:-1},quest:{label:'Quest gates',symbol:'✧',offset:-2},diary:{label:'Diary gates',symbol:'❖',offset:2},milestone:{label:'Milestones',symbol:'✦',offset:0},advice:{label:'Suggested upgrades',symbol:'◇',offset:3},boss:{label:'Boss encounter',symbol:'⚔',offset:0}};

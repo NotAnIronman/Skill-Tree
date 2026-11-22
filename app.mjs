@@ -1,14 +1,14 @@
-import {catalog,skills,skillNames,kinds,acquisitionMethods,attribution,optionsFor,nodesFor} from './catalog.mjs?v=7ca382852025';
-import {evaluate,status,methodsFor,validateCatalog} from './engine.mjs?v=7ca382852025';
-import {levelY,layoutTree,layoutLadder,branchRoutes,spinePath} from './tree.mjs?v=7ca382852025';
-import {bossingData,bossIds,combatTaskIds,drawBossDetail} from './bossing.mjs?v=7ca382852025';
-import {questData,questIds,questState,questGatesMet,layoutQuests,drawQuestDetail,questRouteData,questProgress,questPointY,nextRecommendedQuest,drawQuestCapeDetail} from './questing.mjs?v=7ca382852025';
-import {playerName,parseHiscores,mergeCharacter} from './character.mjs?v=7ca382852025';
-import {iconData} from './icon-data.mjs?v=7ca382852025';
-import {bossIcons} from './boss-icons.mjs?v=7ca382852025';
-import {siteConfig} from './config.mjs?v=7ca382852025';
-import {gearData,gearIds,gearNodes,gearOwned,layoutGear,drawGearDetail,setupsForBoss,slotNames} from './gear.mjs?v=7ca382852025';
-import {gearIcons} from './gear-icons.mjs?v=7ca382852025';
+import {catalog,skills,skillNames,kinds,acquisitionMethods,attribution,optionsFor,nodesFor} from './catalog.mjs?v=1157a96af06f';
+import {evaluate,status,methodsFor,validateCatalog} from './engine.mjs?v=1157a96af06f';
+import {levelY,layoutTree,layoutLadder,branchRoutes,spinePath} from './tree.mjs?v=1157a96af06f';
+import {bossingData,bossIds,combatTaskIds,drawBossDetail} from './bossing.mjs?v=1157a96af06f';
+import {questData,questIds,questState,questGatesMet,layoutQuests,drawQuestDetail,questRouteData,questProgress,questPointY,nextRecommendedQuest,drawQuestCapeDetail} from './questing.mjs?v=1157a96af06f';
+import {playerName,parseHiscores,mergeCharacter} from './character.mjs?v=1157a96af06f';
+import {iconData} from './icon-data.mjs?v=1157a96af06f';
+import {bossIcons} from './boss-icons.mjs?v=1157a96af06f';
+import {siteConfig} from './config.mjs?v=1157a96af06f';
+import {gearData,gearIds,gearNodes,gearOwned,layoutGear,drawGearDetail,setupsForBoss,slotNames} from './gear.mjs?v=1157a96af06f';
+import {gearIcons} from './gear-icons.mjs?v=1157a96af06f';
 validateCatalog(catalog,[]);
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -57,7 +57,7 @@ function updateNavigation(){
   $('display-controls').classList.toggle('boss-filters',page==='Bossing');
   const filters=page==='Gear'?[['all','All equipment'],['weapon','Weapons'],['armour','Armour & off-hands'],['accessories','Accessories & ammo'],['special','Special attacks'],['missing','Not owned'],['owned','Owned']]:page==='Questing'?[['all','All quests'],['available','Quest gates met'],['incomplete','Incomplete'],['complete','Complete']]:page==='Bossing'?[['all','All encounters'],['unbeaten','Not defeated'],['defeated','Defeated']]:[['all','All unlocks'],['resource','Gathering & crafting'],['tool','Equipment'],['activity','Activities & access'],['quest','Quest gates'],['diary','Diary gates'],['advice','Suggested upgrades']];
   $('filter').replaceChildren(...filters.map(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;return option;}));
-  document.body.dataset.page=page;
+  document.body.dataset.page=page;document.body.dataset.gearSetup=page==='Gear'?gearSetup:'';
   $('start').textContent=page==='Questing'?'0 QP':page==='Bossing'?'First bosses':'Level 1';$('end').textContent=page==='Questing'?'Quest cape':page==='Bossing'?'Endgame':'Level 99';
   $('search').placeholder=page==='Questing'?'Find a quest or series':page==='Bossing'?'Find a boss, mechanic, or reward':'Find an unlock';$('search').setAttribute('aria-label',$('search').placeholder);
   document.querySelector('.top-terminal span').textContent=page==='Bossing'?'VI':'99';document.querySelector('.top-terminal p').textContent=page==='Bossing'?'ENDGAME':'MASTERY';
@@ -105,18 +105,18 @@ function render(){
     button.setAttribute('aria-label',gearing?`${group.nodes[0].title}, ${slotNames[group.nodes[0].slot]}, ${group.nodes[0].phase}${state==='met'?', owned':''}`:questing?`${group.nodes[0].title}, ${group.nodes[0].difficulty}${group.reference?', shared prerequisite':''}`:bossing?`${group.nodes[0].title}, ${group.nodes[0].tier} tier${state==='met'?', defeated':''}`:`${group.nodes[0].title}, level ${group.level}, ${kinds[group.kind].label}`);button.setAttribute('aria-pressed',String(group.id===selectedGroup));
     const title=group.nodes[0].title;
     button.title=title;
-    button.innerHTML=`<span class="node-medal">${orbIcon(group.nodes[0],group.kind)}${(bossing||questing||gearing)&&state==='met'?'<span class="kill-mark">✓</span>':questing&&group.reference?'<span class="quest-ref-mark">↗</span>':questing&&group.deadEnd?'<span class="quest-end-tag" title="No later quests require its completion">END</span>':''}</span><span class="node-title">${esc(title)}</span><span class="node-level">${gearing?group.reference?'Earlier option':`${esc(slotNames[group.nodes[0].slot])}${group.nodes[0].setup?' · Rank '+group.nodes[0].rank:''}`:questing?`#${group.routeIndex} · ${group.requiredState===1?'Start only':group.nodes[0].type==='miniquest'?'Miniquest':esc(group.nodes[0].difficulty)}`:bossing?`${esc(group.nodes[0].tier)} · ${group.nodes[0].tasks.length} tasks`:`${group.level} · ${group.role==='spine'?'Core unlock':esc(kinds[group.kind].label)}`}</span>`;
+    button.innerHTML=`<span class="node-medal">${orbIcon(group.nodes[0],group.kind)}${(bossing||questing||gearing)&&state==='met'?'<span class="kill-mark">✓</span>':questing&&group.reference?'<span class="quest-ref-mark">↗</span>':questing&&group.deadEnd?'<span class="quest-end-tag" title="No later quests require its completion">END</span>':''}</span><span class="node-title">${esc(title)}</span><span class="node-level">${gearing?group.reference?`${group.upgradeCount} ${group.upgradeCount===1?'branch':'branches'}`:group.nodes[0].setup?`Rank ${group.nodes[0].rank}`:'':questing?`#${group.routeIndex} · ${group.requiredState===1?'Start only':group.nodes[0].type==='miniquest'?'Miniquest':esc(group.nodes[0].difficulty)}`:bossing?`${esc(group.nodes[0].tier)} · ${group.nodes[0].tasks.length} tasks`:`${group.level} · ${group.role==='spine'?'Core unlock':esc(kinds[group.kind].label)}`}</span>`;
     button.onclick=()=>{selectedGroup=group.id;selectedId=null;document.querySelectorAll('.tree-node').forEach(b=>{b.classList.toggle('selected',b===button);b.setAttribute('aria-pressed',String(b===button));});drawDetail(group);$('detail').scrollTop=0;if(innerWidth<=760)showDetail();};
     $('nodes').append(button);
   }
   drawPaths();
-  $('ruler').innerHTML=gearing?layout.chapters.map(chapter=>`<div class="gear-chapter quest-chapter" style="left:${layout.center}px;top:${chapter.y}px"><b>${gearSetup?7-chapter.stage:chapter.stage}</b><span>${esc(chapter.title)}</span></div>`).join(''):questing?layout.chapters.map(chapter=>`<div class="quest-chapter" style="left:${layout.center}px;top:${chapter.y}px"><b>${chapter.points} QP</b><span>${esc(chapter.title)}</span></div>`).join(''):bossing?layout.checkpoints.map(tier=>`<span class="tier-gate" data-tier="${tier.title}" style="left:${layout.center}px;top:${tier.y}px"><b>${['I','II','III','IV','V','VI'][tier.stage-1]}</b><span>${tier.title}</span></span>`).join(''):Array.from({length:99},(_,i)=>i+1).filter(n=>(n===1||n===99||n%5===0)&&!groups.some(g=>g.level===n&&g.role==='spine')).map(n=>`<span class="level-tick ${n%10===0?'major':''}" style="left:${layout.center}px;top:${levelY(n,layout)}px">${n}</span>`).join('');
+  $('ruler').innerHTML=gearing?layout.chapters.map(chapter=>`<div class="gear-chapter quest-chapter" style="left:${layout.center}px;top:${chapter.y}px"><b>${gearSetup?7-chapter.stage:chapter.stage}</b><span>${esc(chapter.title)}</span></div>`).join('')+layout.labels.map(label=>`<div class="gear-fan-label" style="left:${label.x}px;top:${label.y}px;width:${label.width}px">${esc(label.title)}</div>`).join('')+layout.hubs.map(hub=>`<div class="gear-entry-hub" style="left:${hub.x}px;top:${hub.y}px" aria-hidden="true">◇</div>`).join(''):questing?layout.chapters.map(chapter=>`<div class="quest-chapter" style="left:${layout.center}px;top:${chapter.y}px"><b>${chapter.points} QP</b><span>${esc(chapter.title)}</span></div>`).join(''):bossing?layout.checkpoints.map(tier=>`<span class="tier-gate" data-tier="${tier.title}" style="left:${layout.center}px;top:${tier.y}px"><b>${['I','II','III','IV','V','VI'][tier.stage-1]}</b><span>${tier.title}</span></span>`).join(''):Array.from({length:99},(_,i)=>i+1).filter(n=>(n===1||n===99||n%5===0)&&!groups.some(g=>g.level===n&&g.role==='spine')).map(n=>`<span class="level-tick ${n%10===0?'major':''}" style="left:${layout.center}px;top:${levelY(n,layout)}px">${n}</span>`).join('');
   $('empty').hidden=groups.length>0;
   drawDetail(first);
 }
 function drawPaths(){
   const svg=$('paths');svg.setAttribute('viewBox',`0 0 ${treeView.width} ${treeView.height}`);
-  if(page==='Gear'){const {center,height,width,compact}=treeView;svg.innerHTML=compact?`<path class="stem" d="M ${center} ${height-235} V 145"/><path class="branch gear-connection" d="M ${width/2} ${height-108} C ${width/2} ${height-220} ${center} ${height-200} ${center} ${height-235}"/><path class="branch gear-connection" d="M ${center} 145 C ${center} 90 ${width/2} 120 ${width/2} 57"/>`:`<path class="stem" d="M ${center} ${height-108} V 57"/>`;svg.innerHTML+=treeView.routes.map(route=>`<path class="branch gear-connection ${route.kind}" d="${route.path}"/>`).join('');return;}
+  if(page==='Gear'){const {center,height,width,compact}=treeView;svg.innerHTML=compact?`<path class="stem" d="M ${center} ${height-235} V 145"/><path class="branch gear-connection" d="M ${width/2} ${height-108} C ${width/2} ${height-220} ${center} ${height-200} ${center} ${height-235}"/><path class="branch gear-connection" d="M ${center} 145 C ${center} 90 ${width/2} 120 ${width/2} 57"/>`:`<path class="stem" d="M ${center} ${height-108} V 57"/>`;svg.innerHTML+=treeView.routes.map(route=>`<path class="branch gear-connection ${route.kind}" data-slot="${route.slot||''}" d="${route.path}"/>`).join('');return;}
   if(page==='Questing'){const progress=questProgress(profile());svg.innerHTML=`<path class="stem quest-route-rail" d="M ${treeView.center} ${treeView.height-108} V 57"/><path class="progress quest-progress" d="M ${treeView.center} ${treeView.height-108} V ${questPointY(progress.points,treeView)}"/>`+treeView.routes.map(route=>`<path class="quest-connection ${route.kind}" d="${route.path}"/>`).join('');return;}
   let markup=`<path class="stem" d="${spinePath(treeView)}"/>`;
   if(page==='Skilling')markup+=`<path class="progress" d="${spinePath(treeView,levelY(profile().levels[selection],treeView))}"/>`;

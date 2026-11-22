@@ -1,6 +1,5 @@
-import {gearData} from './gear-data.mjs?v=7ca382852025';
-import {bossingData} from './boss-data.mjs?v=7ca382852025';
-import {branchRoutes} from './tree.mjs?v=7ca382852025';
+import {gearData} from './gear-data.mjs?v=1157a96af06f';
+import {bossingData} from './boss-data.mjs?v=1157a96af06f';
 export {gearData};
 export const gearStyles=['Crush','Slash','Stab','Ranged','Magic','Boss setups'];
 export const gearMap=new Map(gearData.items.map(item=>[item.id,item]));
@@ -16,27 +15,62 @@ export function gearNodes(style,mode='main',setupId=''){
 }
 export const gearOwned=(node,profile)=>!!profile.gearOwned?.[node.item||node.id];
 const inFilter=(node,filter,profile)=>filter==='all'||filter==='missing'&&!gearOwned(node,profile)||filter==='owned'&&gearOwned(node,profile)||filter==='weapon'&&node.slot==='weapon'||filter==='special'&&node.slot==='special'||filter==='armour'&&['head','body','legs','offhand','hands','feet'].includes(node.slot)||filter==='accessories'&&['neck','cape','ring','ammo'].includes(node.slot);
-export function layoutGear(nodes,query='',{width=960,density=1,filter='all',profile={}}={}){
- width=Math.max(200,Math.floor(width));const compact=width<650,center=compact?24:width/2,left=compact?58:16,usable=width-left-16,capacity=Math.max(1,Math.min(6,Math.floor(usable/154))),columns=!compact&&capacity>1?capacity-capacity%2:capacity,nodeWidth=Math.min(138,(usable-12*(columns-1))/columns),positions=Array.from({length:columns},(_,i)=>columns===1?left+usable/2:left+nodeWidth/2+i*(usable-nodeWidth)/(columns-1));
- const text=query.trim().toLowerCase(),visible=nodes.filter(n=>inFilter(n,filter,profile)&&(!text||[n.title,slotNames[n.slot],n.phase,n.acquisition?.route||''].join(' ').toLowerCase().includes(text))),groups=[],routes=[],chapters=[],levels={},boss=nodes.some(n=>n.setup),gap=Math.max(296,312*density);let cursor=220;
- for(let stage=6;stage>=1;stage--){const peers=visible.filter(n=>n.min===stage).toSorted((a,b)=>slotOrder.indexOf(a.slot)-slotOrder.indexOf(b.slot));levels[stage]=cursor;if(!peers.length)continue;
-  for(let offset=0;offset<peers.length;offset+=columns){const batch=peers.slice(offset,offset+columns),row=[];
-   const xs=batch.length===1?[compact?left+usable/2:center]:batch.map((_,i)=>positions[Math.round(i*(positions.length-1)/(batch.length-1))]);
-   for(const [index,node] of batch.entries()){
-    const x=xs[index],y=cursor,group={id:node.id,level:stage,kind:'gear',nodes:[node],x,y,nodeWidth,role:'branch',reference:false,originX:center,originY:y-54};groups.push(group);row.push(group);
-    const earlier=nodes.filter(n=>n.slot===node.slot&&n.min<stage),prior=Math.max(0,...earlier.map(n=>n.min)),previous=earlier.findLast(n=>n.min===prior);
-    if(previous){const ref={...group,id:'ref:'+node.id+':'+previous.id,nodes:[previous],reference:true,y:y+158},track=x-nodeWidth/2-25;groups.push(ref);routes.push({id:group.id,kind:'upgrade',path:'M '+(x-16)+' '+ref.y+' C '+track+' '+ref.y+' '+track+' '+y+' '+(x-24)+' '+y});}
-   }
-   // Only entry items attach directly to the journey rail; later items refer to a prior option.
-   const entry=row.filter(g=>!groups.some(ref=>ref.reference&&ref.id.startsWith('ref:'+g.id+':')));
-   routes.push(...branchRoutes(entry));
-   cursor+=batch.some(n=>nodes.some(p=>p.slot===n.slot&&p.min<stage))?gap:Math.max(188,200*density);
-  }
-  levels[stage]=cursor+8;chapters.push({stage,title:boss?'Wiki rank '+(7-stage):stages[stage-1],y:cursor+8});cursor+=124;
+export function gearBranches(nodes){
+ const fans=[];
+ for(let stage=6;stage>=1;stage--)for(const slot of slotOrder){
+  const children=nodes.filter(n=>n.min===stage&&n.slot===slot);if(!children.length)continue;
+  const earlier=nodes.filter(n=>n.slot===slot&&n.min<stage),prior=Math.max(0,...earlier.map(n=>n.min));
+  fans.push({id:`fan:${stage}:${slot}`,stage,slot,children,parent:earlier.findLast(n=>n.min===prior)||null});
  }
- for(let i=5;i>=1;i--)if(!visible.some(n=>n.min===i))levels[i]=Math.max(levels[i],levels[i+1]);
- return {groups:groups.sort((a,b)=>a.level-b.level||Number(a.reference)-Number(b.reference)||b.y-a.y),routes,width,center,height:cursor+160,steps:6,levels,chapters,checkpoints:[],compact};
+ return fans;
 }
+export function layoutGear(nodes,query='',{width=960,density=1,filter='all',profile={}}={}){
+ width=Math.max(200,Math.floor(width));
+ const compact=width<650,center=compact?24:width/2,regions=compact?[{left:58,width:width-74}]:[{left:16,width:width/2-42},{left:width/2+26,width:width/2-42}],capacity=Math.max(1,Math.min(compact?6:4,Math.floor(regions[0].width/120))),unit=regions[0].width/capacity;
+ const text=query.trim().toLowerCase(),matches=n=>inFilter(n,filter,profile)&&(!text||[n.title,slotNames[n.slot],n.phase,n.acquisition?.route||''].join(' ').toLowerCase().includes(text));
+ const fans=gearBranches(nodes).map(fan=>({...fan,children:fan.children.filter(matches)})).filter(fan=>fan.children.length),groups=[],routes=[],chapters=[],labels=[],hubs=[],levels={},boss=nodes.some(n=>n.setup),leafGap=Math.max(216,228*density);let cursor=260;
+ for(let stage=6;stage>=1;stage--){
+  const peers=fans.filter(fan=>fan.stage===stage);levels[stage]=cursor;if(!peers.length)continue;
+  const rows=[];let row={fans:[],used:regions.map(()=>0)};
+  for(const fan of peers){const columns=Math.min(capacity,fan.children.length);let region=row.used.findIndex(count=>count+columns<=capacity);if(region<0){rows.push(row);row={fans:[],used:regions.map(()=>0)};region=0;}row.fans.push({...fan,columns,region,offset:row.used[region],rows:Math.ceil(fan.children.length/columns)});row.used[region]+=columns;}
+  if(row.fans.length)rows.push(row);
+  for(const row of rows){
+   const depth=Math.max(...row.fans.map(fan=>fan.rows)),rootY=cursor+(depth-1)*leafGap+210,roots=[];
+   for(const fan of row.fans){
+    const region=regions[fan.region],left=region.left+fan.offset*unit,span=fan.columns*unit,pad=fan.rows>1?20:0,cell=(span-pad)/fan.columns,nodeWidth=Math.min(138,cell-12),rootX=left+span/2;
+    labels.push({id:fan.id,title:slotNames[fan.slot],x:rootX,y:cursor-126,width:span-12});
+    const children=[];
+    for(const [index,node] of fan.children.entries()){
+     const batch=Math.floor(index/fan.columns),count=Math.min(fan.columns,fan.children.length-batch*fan.columns),column=index%fan.columns,x=left+pad+(span-pad-count*cell)/2+cell*(column+.5),y=cursor+batch*leafGap;
+     const group={id:node.id,level:stage,kind:'gear',nodes:[node],x,y,nodeWidth,role:'branch',reference:false,fan:fan.id};groups.push(group);children.push(group);
+    }
+    const root={id:`root:${fan.id}`,x:rootX,y:rootY,radius:fan.parent?20:13,slot:fan.slot};roots.push(root);
+    if(fan.parent)groups.push({id:`ref:${fan.id}:${fan.parent.id}`,level:stage,kind:'gear',nodes:[fan.parent],x:rootX,y:rootY,nodeWidth:Math.min(154,span-12),role:'branch',reference:true,fan:fan.id,upgradeIds:fan.children.map(n=>n.id),upgradeCount:fan.children.length});
+    else hubs.push({...root,title:slotNames[fan.slot]});
+    if(fan.rows===1){
+     const forkY=cursor+100;
+     routes.push({id:`trunk:${fan.id}`,kind:'upgrade-trunk',slot:fan.slot,path:`M ${rootX} ${rootY-root.radius} C ${rootX-8} ${rootY-64} ${rootX-8} ${forkY+26} ${rootX} ${forkY}`});
+     for(const child of children)routes.push({id:child.id,kind:'upgrade',slot:fan.slot,path:`M ${rootX} ${forkY} C ${rootX+10} ${forkY-30} ${child.x+10} ${child.y+68} ${child.x} ${child.y+24}`});
+    }else{
+     const track=left+4,lastY=cursor+(fan.rows-1)*leafGap+100;
+     routes.push({id:`trunk:${fan.id}`,kind:'upgrade-trunk',slot:fan.slot,path:`M ${rootX} ${rootY-root.radius} C ${rootX} ${rootY-86} ${track} ${lastY+48} ${track} ${lastY}`});
+     for(let batch=fan.rows-1;batch>=0;batch--){const forkY=cursor+batch*leafGap+100;
+      if(batch<fan.rows-1)routes.push({id:`trunk:${fan.id}:${batch}`,kind:'upgrade-trunk',slot:fan.slot,path:`M ${track} ${forkY+leafGap} C ${track-5} ${forkY+leafGap-60} ${track-5} ${forkY+60} ${track} ${forkY}`});
+      for(const child of children.filter(g=>Math.abs(g.y-(forkY-100))<1))routes.push({id:child.id,kind:'upgrade',slot:fan.slot,path:`M ${track} ${forkY} C ${track+20} ${forkY-24} ${child.x+10} ${child.y+68} ${child.x} ${child.y+24}`});
+     }
+    }
+   }
+   for(const side of [-1,1]){const peers=roots.filter(root=>(root.x<center?-1:1)===side);if(!peers.length)continue;const outer=peers.reduce((a,b)=>Math.abs(a.x-center)>Math.abs(b.x-center)?a:b),dx=outer.x-center;
+    routes.push({id:`row:${stage}:${cursor}:${side}`,kind:'journey-branch',roots:peers.map(root=>root.id),path:`M ${center} ${rootY} C ${center+dx/3} ${rootY+12} ${center+dx*2/3} ${rootY+12} ${outer.x} ${rootY}`});
+   }
+   cursor=rootY+220;
+  }
+  levels[stage]=cursor+5;chapters.push({stage,title:boss?'Wiki rank '+(7-stage):stages[stage-1],y:cursor+5});cursor+=164;
+ }
+ for(let i=5;i>=1;i--)if(!fans.some(f=>f.stage===i))levels[i]=Math.max(levels[i],levels[i+1]);
+ return {groups:groups.sort((a,b)=>a.level-b.level||Number(a.reference)-Number(b.reference)||b.y-a.y),routes,width,center,height:cursor+160,steps:6,levels,chapters,labels,hubs,checkpoints:[],compact};
+}
+
 export function acquisitionText(item,mode='main'){
  const route=item.acquisition?.route;
  if(mode==='main'){
@@ -53,7 +87,7 @@ export function drawGearDetail(container,group,{profile,mode,orbIcon,onChange,on
  const node=group.nodes[0],item=gearMap.get(node.item),image=el('div','detail-icon');image.innerHTML=orbIcon(item,'gear');
  container.append(image,el('p','detail-kicker',`${slotNames[node.slot]} · ${node.setup?node.phase:mode==='ironman'?'Ironman acquisition':'Main upgrades'}`),el('h2','',node.title));
  const owned=el('label','boss-check gear-owned'),input=document.createElement('input');input.type='checkbox';input.checked=gearOwned(node,profile);input.setAttribute('aria-label','Equipment owned');input.onchange=()=>{profile.gearOwned??={};if(input.checked)profile.gearOwned[item.id]=true;else delete profile.gearOwned[item.id];onChange();};owned.append(input,document.createTextNode(item.facts?'Owned in this profile':'Own a suitable option'));container.append(owned);
- if(group.reference)container.append(el('p','gear-context-note',node.setup?'Repeated lower-ranked option for this slot.':'Repeated earlier option for this slot. The connection shows a possible upgrade route; owning it is optional.'));
+ if(group.reference)container.append(el('p','gear-context-note',node.setup?'Shared lower-ranked option for the equipment branches above.':'Shared earlier option for the upgrade branches above. Owning it is optional.'));
  if(!item.facts)container.append(el('p','quest-gate-note','This is an equipment family or alternative group from the Wiki. Check the linked guide to choose a specific item.'));
  container.append(el('p','gear-context-note',node.setup?`${node.setup.title}. Wiki effectiveness ranking; lower numbers rank higher. ${node.alternatives>1?'Items at this rank are alternatives. ':''}Rankings do not change with account mode.`:`${node.phase}. Suggested ${mode==='ironman'?'acquisition':'purchase / reward'} stage. Items sharing a stage are options, not a shopping checklist or a DPS ranking.`));
  if(node.setup){container.append(el('p','gear-condition','Table entry: '+node.tableText));for(const condition of node.conditions)container.append(el('p','gear-condition',condition));if(!node.conditions.length)container.append(el('p','quest-gate-note','Check the strategy for encounter mechanics, switches, and full-set requirements.'));}
@@ -69,7 +103,8 @@ export function drawGearDetail(container,group,{profile,mode,orbIcon,onChange,on
  container.append(use);
  const peers=nodes.filter(n=>n.slot===node.slot&&n.id!==node.id),before=peers.filter(n=>n.min<node.min),after=peers.filter(n=>n.min>node.min),same=peers.filter(n=>n.min===node.min);
  const section=(title,list)=>{if(!list.length)return;const box=el('section','boss-section');box.append(el('h3','',title));for(const n of list){const button=el('button','quest-link',`${gearOwned(n,profile)?'✓ ':''}${n.title}`);button.onclick=()=>onFocus(n.id);box.append(button);}container.append(box);};
- section('Other options at this stage',same);const prior=Math.max(0,...before.map(n=>n.min)),later=Math.min(7,...after.map(n=>n.min));section(node.setup?'Lower-ranked alternatives':'Earlier options',before.filter(n=>n.min===prior));section(node.setup?'Higher-ranked options':'Later options',after.filter(n=>n.min===later));
+ const branches=gearBranches(nodes).filter(fan=>fan.parent?.id===node.id).flatMap(fan=>fan.children);section('Upgrade branches',branches);
+ section('Other options at this stage',same);const prior=Math.max(0,...before.map(n=>n.min)),later=Math.min(7,...after.map(n=>n.min));section(node.setup?'Lower-ranked alternatives':'Earlier options',before.filter(n=>n.min===prior));if(!branches.length)section(node.setup?'Higher-ranked options':'Later options',after.filter(n=>n.min===later));
  if(Object.keys(item.stats||{}).length){const details=el('details','quest-notes');details.append(el('summary','','Equipment bonuses'));const table=el('table','gear-stats');const labels={astab:'Stab accuracy',aslash:'Slash accuracy',acrush:'Crush accuracy',amagic:'Magic accuracy',arange:'Ranged accuracy',str:'Melee strength',rstr:'Ranged strength',mdmg:'Magic damage %',prayer:'Prayer',speed:'Attack interval (ticks)',dstab:'Stab defence',dslash:'Slash defence',dcrush:'Crush defence',dmagic:'Magic defence',drange:'Ranged defence'};for(const [key,label] of Object.entries(labels)){if(item.stats[key]===undefined)continue;const row=el('tr');row.append(el('th','',label),el('td','',item.stats[key]));table.append(row);}details.append(table,el('p','quest-gate-note','Bonuses alone do not determine DPS. Speed, target defence, spells, and set effects matter.'));container.append(details);}
  container.append(sourceLink('Item guide ↗',item.source),sourceLink(node.setup?'Boss strategy & equipment table ↗':'Wiki gear progression guide ↗',node.setup?.source||node.source));
 }

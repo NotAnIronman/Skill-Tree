@@ -1,8 +1,8 @@
-import {wikiData} from './wiki-data.mjs?v=7ca382852025';
-import {coreUnlockIds} from './progression.mjs?v=7ca382852025';
-import {bossingData} from './boss-data.mjs?v=7ca382852025';
-import {questOptions,questsFor} from './questing.mjs?v=7ca382852025';
-import {gearStyles,gearNodes} from './gear.mjs?v=7ca382852025';
+import {wikiData} from './wiki-data.mjs?v=1157a96af06f';
+import {coreUnlockIds} from './progression.mjs?v=1157a96af06f';
+import {bossingData} from './boss-data.mjs?v=1157a96af06f';
+import {questOptions,questsFor} from './questing.mjs?v=1157a96af06f';
+import {gearStyles,gearNodes} from './gear.mjs?v=1157a96af06f';
 export const skillNames=Object.keys(wikiData.skills);
 export const skills=Object.fromEntries(skillNames.map(name=>[name,{icon:name.slice(0,2).toUpperCase()}]));
 export const kinds={resource:{label:'Gather & make',symbol:'◈',offset:0},tool:{label:'Equipment',symbol:'⚒',offset:1},activity:{label:'Activities & access',symbol:'⌘',offset:-1},quest:{label:'Quest gates',symbol:'✧',offset:-2},diary:{label:'Diary gates',symbol:'❖',offset:2},milestone:{label:'Milestones',symbol:'✦',offset:0},advice:{label:'Suggested upgrades',symbol:'◇',offset:3},boss:{label:'Boss encounter',symbol:'⚔',offset:0}};

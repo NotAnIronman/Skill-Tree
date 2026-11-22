@@ -1,5 +1,5 @@
-import {questData} from './quest-data.mjs?v=7ca382852025';
-import {questRouteData} from './quest-route-data.mjs?v=7ca382852025';
+import {questData} from './quest-data.mjs?v=1157a96af06f';
+import {questRouteData} from './quest-route-data.mjs?v=1157a96af06f';
 export {questData};
 export {questRouteData};
 export const questMap=new Map(questData.quests.map(q=>[q.id,q]));
